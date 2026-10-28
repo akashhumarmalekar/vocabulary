@@ -153,7 +153,8 @@ begin|start:the most common word|commence:begin (formal)|launch:start something 
 end|finish:complete|conclude:end formally|wrap up:finish (informal)|terminate:end officially|complete:finish all parts|cease:stop
 show|display:put where it can be seen|demonstrate:show how it works|reveal:make known|illustrate:explain with examples|indicate:point to|present:show formally
 difficult|hard:needs effort|challenging:difficult in a stimulating way|tough:hard to deal with|demanding:needs a lot of effort|complex:having many parts|tricky:needing care
-fast|quick:taking little time|rapid:happening very quickly|swift:quick and smooth|brisk:quick and energetic|prompt:without delay|speedy:fast (often informal)`
+fast|quick:taking little time|rapid:happening very quickly|swift:quick and smooth|brisk:quick and energetic|prompt:without delay|speedy:fast (often informal)
+slow|gradual:happening little by little|sluggish:moving or working with little energy|leisurely:unhurried and relaxed|delayed:later than planned|steady:regular, without sudden change|unhurried:not rushed`
 .trim().split('\n').map(r=>{const a=r.split('|');return{h:a[0],s:a.slice(1).map(x=>{const i=x.indexOf(':');return{w:x.slice(0,i),m:x.slice(i+1)}})}});
 
 /* ===== HELPERS ===== */
@@ -298,6 +299,15 @@ function quiz(){
   Q.ans!=null?h('div',{'aria-live':'polite'},h('p',{},(ok?'Correct. ':'Not quite. ')+q.it.w+' — '+q.it.m),q.it.e?h('p',{class:'mut'},'Example: '+q.it.e):null,
    h('button',{class:'btn p',onclick:()=>{Q.i++;Q.ans=null;if(Q.i>=Q.qs.length){S.quiz.push({d:ymd(),n:Q.qs.length,s:Q.sc});save()}render()}},Q.i+1>=Q.qs.length?'See results':'Next')):null)}
 
+/* Optional online lookup (free Datamuse API, no key). Used only for words without a built-in group.
+ Level filter: word frequency 1-70 per million words is used as a proxy for intermediate vocabulary
+ (very common and very rare words are dropped). It is an approximation, not an official CEFR level. */
+async function online(v){const q=encodeURIComponent(v),u='https://api.datamuse.com/words?md=df&max=60&';
+ const [a,b]=await Promise.all([fetch(u+'rel_syn='+q).then(r=>r.json()),fetch(u+'ml='+q).then(r=>r.json())]);
+ const seen=new Set([v]),rows=[];
+ (Array.isArray(a)?a:[]).concat(Array.isArray(b)?b:[]).forEach(o=>{if(!o||typeof o.word!='string'||seen.has(o.word)||!/^[a-z][a-z -]*$/.test(o.word))return;seen.add(o.word);
+  const f=parseFloat(((o.tags||[]).find(t=>t.startsWith('f:'))||'f:0').slice(2)),d=(o.defs||[])[0];rows.push({w:o.word,f,m:d?d.replace('\t',': '):''})});
+ const mid=rows.filter(r=>r.f>=1&&r.f<=70);return(mid.length>=5?mid:rows.filter(r=>r.f>=.3)).slice(0,14)}
 function synCloud(){let cur=SYN[0],pick=null;
  const chips=h('div',{class:'row'}),out=h('div'),note=h('p',{class:'mut','aria-live':'polite'});
  const lib=w=>all().find(x=>x.w.toLowerCase()==w.toLowerCase());
@@ -305,12 +315,16 @@ function synCloud(){let cur=SYN[0],pick=null;
   const it=pick&&lib(pick.w);
   out.replaceChildren(h('div',{class:'cloud',style:'justify-content:center;padding:14px'},h('b',{style:'font-size:2.2rem'},cur.h),
    cur.s.map(s=>h('button',{'aria-pressed':pick==s?'true':'false',style:'font-size:1.35rem'+(pick==s?';text-decoration:underline':''),onclick:()=>{pick=s;draw()}},s.w))),
-   pick?h('div',{class:'row'},h('span',{},h('b',{},pick.w),' — '+pick.m),it?h('button',{class:'btn',onclick:()=>openW(it)},'Open full card'):null):h('p',{class:'mut'},'Tap a word to see how it differs from "'+cur.h+'".'))};
- const go=v=>{v=v.trim().toLowerCase();if(!v){note.textContent='';return}
+   pick?h('div',{class:'row'},h('span',{},h('b',{},pick.w),pick.m?' — '+pick.m:' — no short meaning available'),it?h('button',{class:'btn',onclick:()=>openW(it)},'Open full card'):null):h('p',{class:'mut'},'Tap a word to see how it differs from "'+cur.h+'".'))};
+ let tk=0,tm;
+ const go=(v,now)=>{v=v.trim().toLowerCase().replace(/\s+/g,' ');clearTimeout(tm);const my=++tk;if(!v){note.textContent='';return}
   const g=SYN.find(g=>g.h==v||g.s.some(s=>s.w.toLowerCase()==v));
-  if(g){cur=g;pick=g.s.find(s=>s.w.toLowerCase()==v)||null;note.textContent='';draw()}else note.textContent='No synonym group for "'+v+'" yet. Pick one of the words above.'};
- const w=h('div',{class:'box'},h('h2',{},'Synonym cloud'),h('p',{class:'mut'},'Choose a common word to see other words with a similar meaning. Search by the common word or any synonym.'),
-  h('input',{type:'search','aria-label':'Find a word',placeholder:'Type a word, e.g. glad…',oninput:e=>go(e.target.value)}),note,chips,out,
+  if(g){cur=g;pick=g.s.find(s=>s.w.toLowerCase()==v)||null;note.textContent='';draw();return}
+  if(!/^[a-z][a-z' -]{0,30}$/.test(v)){note.textContent='Type one English word using letters only.';return}
+  note.textContent='Looking up related words…';
+  tm=setTimeout(()=>online(v).then(r=>{if(my!=tk)return;if(r.length){cur={h:v,s:r};pick=null;note.textContent='Intermediate-level related words from an online lookup, closest first.';draw()}else note.textContent='No related words found for "'+v+'".'}).catch(()=>{if(my==tk)note.textContent='Could not reach the online lookup. Check your connection, or pick one of the built-in words below.'}),now?0:450)};
+ const w=h('div',{class:'box'},h('h2',{},'Synonym cloud'),h('p',{class:'mut'},'Type any English word to see a cloud of related intermediate-level words, or choose one of the built-in words below.'),
+  h('input',{type:'search','aria-label':'Find a word',placeholder:'Type any word, e.g. slow…',oninput:e=>go(e.target.value),onkeydown:e=>{if(e.key=='Enter')go(e.target.value,true)}}),note,chips,out,
   h('p',{class:'mut'},'Word size here is only for readability; it carries no statistic.'));
  draw();return w}
 function cloud(){let k='all',s='';
