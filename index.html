@@ -184,15 +184,15 @@ function streaks(){const ks=Object.keys(S.log).filter(k=>{const o=S.log[k];retur
 /* ===== DAILY 3 NEW WORDS =====
  Picked once per day (saved, so a refresh shows the same three), from words you have not learned
  and have not been shown before. When every word has been shown, the cycle restarts. */
+function pickDaily(rnd,skip=[]){const fresh=()=>all().filter(x=>x.t=='word'&&!P1(x).lr&&!S.seen.includes(x.id)&&!skip.includes(x.id));
+ let pool=fresh();if(pool.length<3){S.seen=[];pool=fresh()}
+ if(pool.length<3)pool=all().filter(x=>!P1(x).lr&&!skip.includes(x.id));
+ for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+ const ids=pool.slice(0,3).map(x=>x.id);if(!ids.length)return 0;
+ S.daily={d:ymd(),ids};S.seen=S.seen.concat(ids);save();return ids.length}
 function todays(){const t=ymd();
- if(!S.daily||S.daily.d!=t||!Array.isArray(S.daily.ids)||S.daily.ids.length<3){
-  const fresh=()=>all().filter(x=>x.t=='word'&&!P1(x).lr&&!S.seen.includes(x.id));
-  let pool=fresh();if(pool.length<3){S.seen=[];pool=fresh()}
-  if(pool.length<3)pool=all().filter(x=>!P1(x).lr);
-  let sd=[...t].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);const rnd=()=>(sd=(sd*1664525+1013904223)>>>0)/4294967296;
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  const ids=pool.slice(0,3).map(x=>x.id);S.daily={d:t,ids};S.seen=S.seen.concat(ids);save()}
- return S.daily.ids.map(id=>all().find(x=>x.id==id)).filter(Boolean)}
+ if(!S.daily||S.daily.d!=t||!Array.isArray(S.daily.ids)){let sd=[...t].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);pickDaily(()=>(sd=(sd*1664525+1013904223)>>>0)/4294967296)}
+ return(S.daily?S.daily.ids:[]).map(id=>all().find(x=>x.id==id)).filter(Boolean)}
 const markL=x=>{const p=gp(x.id);if(!p.lr){p.lr=1;p.at=ymd();p.iv=p.iv||1;p.due=p.due||addD(ymd(),1);act('l');save()}};
 
 /* ===== SPACED REPETITION (simplified SM-2) =====
@@ -245,7 +245,7 @@ function home(){const it=all(),t=ymd(),lg=L(),[cs,bs]=streaks(),g=S.set.goal;
    h('p',{class:'mut'},'Today: '+lg.l+' of '+g+' new words learned'),h('div',{class:'bar'},h('i',{style:'width:'+Math.min(100,lg.l/g*100)+'%'})),
    h('div',{class:'row'},h('button',{class:'btn p',onclick:()=>{V='rev';R=null;render()}},'Start today’s practice')),
    h('p',{class:'mut'},'Routine: 1) learn new words in Review, 2) browse phrases in Library, 3) take a short Quiz, 4) revise what is due.')),
-  h('div',{class:'box'},h('h2',{},'Today’s 3 new words'),h('div',{class:'grid'},todays().map(x=>h('div',{class:'card'},h('b',{},x.w),
+  h('div',{class:'box'},h('div',{class:'row'},h('h2',{style:'margin:0'},'Today’s 3 new words'),h('button',{class:'btn',onclick:()=>{if(pickDaily(Math.random,S.daily?S.daily.ids:[]))render();else toast('No unlearned words left to show. Add your own in My words.')}},'↻ Show 3 new words')),h('div',{class:'grid'},todays().map(x=>h('div',{class:'card'},h('b',{},x.w),
    h('p',{},x.m),x.e?h('p',{class:'mut'},'“'+x.e+'”'):null,S.set.hindi&&x.h?h('p',{class:'mut'},'Hindi: '+x.h):null,
    h('div',{class:'row'},P1(x).lr?h('span',{class:'tag'},'✓ Learned'):h('button',{class:'btn p',onclick:()=>{markL(x);render()}},'Mark learned'),h('button',{class:'btn',onclick:()=>openW(x)},'Details')))))),
   h('div',{class:'grid'},st('Words learned today',lg.l),st('Total learned',it.filter(x=>P1(x).lr).length),st('Phrasal verbs practised',it.filter(x=>x.t=='phr'&&P1(x).n>0).length),
