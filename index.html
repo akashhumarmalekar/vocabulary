@@ -135,6 +135,27 @@ const LV={B:'Beginner',I:'Intermediate',A:'Advanced'};
 const parse=(t,s)=>s.trim().split('\n').map((r,i)=>{const a=r.split('|');return{id:t+i,t,w:a[0],m:a[1],e:a[2],c:a[3]||'general',l:a[4]||'I',h:a[5]||'',p:a[6]||''}});
 const SEED=[].concat(parse('word',WORDS),parse('phr',PHR),parse('idm',IDM),parse('col',COL),parse('pat',PAT));
 
+/* ===== SYNONYM CLOUD DATA (headword|synonym:short meaning|...) ===== */
+const SYN=`happy|glad:pleased about something specific|cheerful:showing happiness in manner|content:quietly satisfied|delighted:very pleased|elated:extremely happy, often after good news|thrilled:very excited and happy|joyful:full of joy
+sad|unhappy:not happy|down:slightly sad (informal)|gloomy:sad and without hope|heartbroken:deeply sad after a loss|melancholy:a thoughtful, lasting sadness|miserable:very unhappy|upset:sad or worried by something
+angry|annoyed:slightly angry|furious:extremely angry|irritated:bothered and impatient|livid:extremely angry (very strong)|outraged:angry about something unfair|cross:mildly angry (British)|resentful:angry about past unfair treatment
+big|huge:very large|enormous:much larger than normal|massive:large and heavy or important|vast:very wide in area|substantial:large in amount (formal)|significant:large enough to matter
+small|tiny:extremely small|compact:small and well organised|minor:not important|modest:not large in size or amount|petite:small and slim (for people)|minimal:the smallest possible
+good|excellent:extremely good|superb:of the highest quality|decent:acceptable, fairly good|outstanding:far better than others|favourable:helpful and positive|satisfactory:good enough
+bad|poor:low quality|awful:very bad|dreadful:extremely bad|inferior:lower in quality|unfavourable:negative, not helpful|substandard:below the required level
+smart|intelligent:good at learning and thinking|bright:quick to learn|clever:quick at finding solutions|sharp:quick and accurate in thinking|knowledgeable:knowing a lot|insightful:seeing deep meaning
+tired|exhausted:completely without energy|drained:emptied of energy|weary:tired from long effort|sleepy:ready to sleep|fatigued:very tired (formal)|worn out:tired after hard work
+important|crucial:extremely important for the result|essential:absolutely necessary|vital:necessary for life or success|significant:having a clear effect|key:most important|critical:needed or serious
+say|state:say formally or clearly|mention:say briefly|declare:announce firmly|claim:say it is true without proof|remark:make a comment|explain:make something clear
+look at|glance:look quickly|stare:look for a long time|observe:watch carefully|inspect:examine closely|scan:look quickly for information|glimpse:see for a very short time
+help|assist:help with a task (formal)|support:give help or encouragement|aid:give practical help|back:support publicly|facilitate:make something easier|collaborate:work together
+begin|start:the most common word|commence:begin (formal)|launch:start something new|initiate:cause to begin|kick off:start (informal)|embark on:start a long project
+end|finish:complete|conclude:end formally|wrap up:finish (informal)|terminate:end officially|complete:finish all parts|cease:stop
+show|display:put where it can be seen|demonstrate:show how it works|reveal:make known|illustrate:explain with examples|indicate:point to|present:show formally
+difficult|hard:needs effort|challenging:difficult in a stimulating way|tough:hard to deal with|demanding:needs a lot of effort|complex:having many parts|tricky:needing care
+fast|quick:taking little time|rapid:happening very quickly|swift:quick and smooth|brisk:quick and energetic|prompt:without delay|speedy:fast (often informal)`
+.trim().split('\n').map(r=>{const a=r.split('|');return{h:a[0],s:a.slice(1).map(x=>{const i=x.indexOf(':');return{w:x.slice(0,i),m:x.slice(i+1)}})}});
+
 /* ===== HELPERS ===== */
 const $=s=>document.querySelector(s);
 const h=(t,a,...k)=>{const e=document.createElement(t);for(const n in a||{}){const v=a[n];if(n.slice(0,2)=='on')e.addEventListener(n.slice(2),v);else if(n=='class')e.className=v;else if(n=='value')e.value=v;else if(v!==false&&v!=null)e.setAttribute(n,v)}k.flat(9).forEach(c=>{if(c!==false&&c!=null)e.append(c instanceof Node?c:String(c))});return e};
@@ -193,7 +214,7 @@ function openW(x){const d=$('#dlg');
   d.replaceChildren(h('h2',{},x.w),
    h('p',{},h('span',{class:'tag'},T[x.t]),h('span',{class:'tag'},LV[x.l]||x.l),h('span',{class:'tag'},x.c)),
    h('p',{},x.m),S.set.hindi&&x.h?h('p',{class:'mut'},'Hindi: '+x.h):null,
-   x.e?h('p',{},'“'+x.e+'”'):null,x.p?h('p',{class:'mut'},x.p):null,
+   x.e?h('p',{},'“'+x.e+'”'):null,x.p?h('p',{class:'mut'},x.p):null,(()=>{const g=SYN.find(g=>g.h==x.w.toLowerCase()||g.s.some(s=>s.w==x.w.toLowerCase()));return g?h('p',{class:'mut'},'Related words: '+[g.h,...g.s.map(s=>s.w)].filter(w=>w!=x.w.toLowerCase()).join(', ')):null})(),
    h('b',{},'Use it today'),ta,
    h('div',{class:'row'},
     h('button',{class:'btn',onclick:()=>{const v=ta.value.trim();if(!v)return toast('Write a sentence first.');gp(x.id).my=v;save();toast(v.toLowerCase().includes(x.w.toLowerCase())?'Sentence saved.':'Saved, but it does not contain the exact term.')}},'Save sentence'),
@@ -277,6 +298,21 @@ function quiz(){
   Q.ans!=null?h('div',{'aria-live':'polite'},h('p',{},(ok?'Correct. ':'Not quite. ')+q.it.w+' — '+q.it.m),q.it.e?h('p',{class:'mut'},'Example: '+q.it.e):null,
    h('button',{class:'btn p',onclick:()=>{Q.i++;Q.ans=null;if(Q.i>=Q.qs.length){S.quiz.push({d:ymd(),n:Q.qs.length,s:Q.sc});save()}render()}},Q.i+1>=Q.qs.length?'See results':'Next')):null)}
 
+function synCloud(){let cur=SYN[0],pick=null;
+ const chips=h('div',{class:'row'}),out=h('div'),note=h('p',{class:'mut','aria-live':'polite'});
+ const lib=w=>all().find(x=>x.w.toLowerCase()==w.toLowerCase());
+ const draw=()=>{chips.replaceChildren(...SYN.map(g=>h('button',{class:'btn'+(g==cur?' p':''),onclick:()=>{cur=g;pick=null;draw()}},g.h)));
+  const it=pick&&lib(pick.w);
+  out.replaceChildren(h('div',{class:'cloud',style:'justify-content:center;padding:14px'},h('b',{style:'font-size:2.2rem'},cur.h),
+   cur.s.map(s=>h('button',{'aria-pressed':pick==s?'true':'false',style:'font-size:1.35rem'+(pick==s?';text-decoration:underline':''),onclick:()=>{pick=s;draw()}},s.w))),
+   pick?h('div',{class:'row'},h('span',{},h('b',{},pick.w),' — '+pick.m),it?h('button',{class:'btn',onclick:()=>openW(it)},'Open full card'):null):h('p',{class:'mut'},'Tap a word to see how it differs from "'+cur.h+'".'))};
+ const go=v=>{v=v.trim().toLowerCase();if(!v){note.textContent='';return}
+  const g=SYN.find(g=>g.h==v||g.s.some(s=>s.w.toLowerCase()==v));
+  if(g){cur=g;pick=g.s.find(s=>s.w.toLowerCase()==v)||null;note.textContent='';draw()}else note.textContent='No synonym group for "'+v+'" yet. Pick one of the words above.'};
+ const w=h('div',{class:'box'},h('h2',{},'Synonym cloud'),h('p',{class:'mut'},'Choose a common word to see other words with a similar meaning. Search by the common word or any synonym.'),
+  h('input',{type:'search','aria-label':'Find a word',placeholder:'Type a word, e.g. glad…',oninput:e=>go(e.target.value)}),note,chips,out,
+  h('p',{class:'mut'},'Word size here is only for readability; it carries no statistic.'));
+ draw();return w}
 function cloud(){let k='all',s='';
  const F={all:()=>true,biz:x=>x.c=='business',daily:x=>x.c=='daily',bm:x=>P1(x).bm,hard:x=>P1(x).wr>0,due:due};
  const defs=[['all','All vocabulary'],['biz','Business & finance'],['daily','Daily conversation'],['bm','Bookmarked'],['rec','Recently learned'],['hard','Difficult'],['due','Due for revision']];
@@ -284,10 +320,10 @@ function cloud(){let k='all',s='';
  const draw=()=>{let r=all();r=k=='rec'?r.filter(x=>P1(x).lr).sort((a,b)=>(P1(b).at||'')>(P1(a).at||'')?1:-1).slice(0,25):r.filter(F[k]);
   r=r.filter(x=>!s||x.w.toLowerCase().includes(s));
   out.replaceChildren(...(r.length?r.map(x=>h('button',{style:'font-size:'+(14+Math.min(1+(P1(x).wr||0)*2+(due(x)?1:0),8)*3)+'px',onclick:()=>openW(x)},x.w)):[h('p',{class:'mut'},'No words here yet. Bookmark, learn or practise words to fill this cloud.')]))};
- const w=h('div',{class:'box'},h('h2',{},'Word clouds'),
+ const w=h('div',{class:'box'},h('h2',{},'Learning-progress clouds'),
   h('div',{class:'row'},sel(defs,v=>{k=v;draw()},k),h('input',{type:'search','aria-label':'Search words',placeholder:'Search list…',oninput:e=>{s=e.target.value.toLowerCase();draw()}})),out,
   h('p',{class:'mut'},'Bigger word = more wrong answers or due for review. Words you have not practised stay small; nothing is estimated. Every word is a button, so the cloud works as a searchable list too.'));
- draw();return w}
+ draw();return h('div',{},synCloud(),w)}
 
 function mine(){const cur=ED&&S.custom.find(c=>c.id==ED),f=Object.assign({t:'word',w:'',m:'',e:'',c:'custom',l:'I',h:''},cur||{});
  const inp=(k,l)=>h('label',{},l,h('input',{value:f[k],style:'width:100%;margin-bottom:8px',oninput:e=>f[k]=e.target.value}));
