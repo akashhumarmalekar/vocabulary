@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LexiFlow — Your Personal English Coach</title>
+<style>
+/* ===== THEME & BASE ===== */
+:root{--bg:#f4f6f3;--c:#fff;--t:#1c2a26;--m:#62706b;--a:#0f766e;--b:#dde4e0;--ok:#15803d;--no:#dc2626}
+[data-theme=dark]{--bg:#0e1614;--c:#16221f;--t:#e6efec;--m:#9bb0aa;--a:#5eead4;--b:#263632;--ok:#4ade80;--no:#f87171}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.55 Georgia,"Iowan Old Style",serif;background:var(--bg);color:var(--t)}
+button,select,input,textarea,nav,.tag,.mut,.num{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+button,select,input,textarea{font-size:.95rem;color:inherit}
+header{background:var(--c);border-bottom:1px solid var(--b);padding:10px 16px;position:sticky;top:0;z-index:5}
+.brand{font-weight:700;font-size:1.25rem}.brand small{color:var(--m);font-weight:400;font-size:.8rem}
+nav{display:flex;gap:6px;overflow-x:auto;margin-top:6px}
+nav button,.btn,select,input,textarea{border:1px solid var(--b);background:var(--c);border-radius:8px;padding:7px 12px}
+button{cursor:pointer}nav button{white-space:nowrap}
+nav .on,.btn.p{background:var(--a);color:#fff;border-color:var(--a)}
+[data-theme=dark] nav .on,[data-theme=dark] .btn.p{color:#04201c}
+main{max-width:1000px;margin:0 auto;padding:16px}
+h2{margin:.2em 0 .4em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.box,.card{background:var(--c);border:1px solid var(--b);border-radius:12px;padding:14px;margin-bottom:12px}
+.card{text-align:left;transition:transform .15s,box-shadow .15s;margin:0}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 14px #0002}
+.num{font-size:1.8rem;font-weight:700}.mut{color:var(--m)}
+.tag{font-size:.75rem;background:var(--b);border-radius:99px;padding:1px 8px;margin-right:4px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.bar{height:10px;background:var(--b);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--a)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.good{border-color:var(--ok)!important;border-width:2px!important}.bad{border-color:var(--no)!important;border-width:2px!important}
+.cloud{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;line-height:1.1}
+.cloud button{background:none;border:0;color:var(--a);padding:2px;font-family:Georgia,serif}
+.wk{display:flex;gap:6px;align-items:flex-end;height:80px}
+.wk div{flex:1;background:var(--a);border-radius:4px 4px 0 0;min-height:2px}
+dialog{max-width:520px;width:92%;border:1px solid var(--b);border-radius:14px;background:var(--c);color:var(--t)}
+dialog::backdrop{background:#0007}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--t);color:var(--bg);padding:8px 16px;border-radius:8px;display:none;z-index:9}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="brand">LexiFlow <small>Your Personal English Coach</small></div><nav id="nav" aria-label="Main"></nav></header>
+<main id="main"></main>
+<dialog id="dlg" aria-label="Word details"></dialog>
+<div id="toast" role="status"></div>
+<script>
+/* ===== SEED DATA (term|meaning|example|category|level B/I/A|hindi|note) ===== */
+const WORDS=`candid|honest and direct, even when it is uncomfortable|She gave a candid answer about why the project failed.|interview|I|स्पष्टवादी
+reluctant|not willing to do something|He was reluctant to share his salary expectations.|emotion|I|अनिच्छुक
+thorough|careful and complete, with attention to detail|Please do a thorough check before sending the report.|work|B|संपूर्ण
+ambiguous|having more than one possible meaning|The email was ambiguous, so I asked for clarification.|business|I|अस्पष्ट
+mitigate|to make something less serious or harmful|We hired extra staff to mitigate the risk of delays.|business|A|कम करना
+leverage|to use something you have to gain an advantage|You can leverage your teaching experience in this role.|business|A|
+feasible|possible and practical to do|Is it feasible to finish the work by Friday?|meeting|I|संभव
+diligent|careful and hardworking|She is a diligent student who never skips revision.|personality|I|मेहनती
+concise|clear and short, with no extra words|Keep your answer concise in the interview.|interview|I|संक्षिप्त
+resilient|able to recover quickly from difficulty|Resilient people learn from failure and move on.|personality|I|लचीला
+procrastinate|to delay doing something you should do|I procrastinate when a task feels too big.|daily|I|टालमटोल करना
+collaborate|to work together with others|Our teams collaborate closely on every product launch.|work|B|सहयोग करना
+revenue|the total money a business earns from sales|Company revenue grew by ten percent this year.|business|I|राजस्व
+budget|a plan for how much money you will spend|We are working with a tight budget this quarter.|business|B|बजट
+invoice|a bill listing goods or services and the money owed|I will send you the invoice by tomorrow morning.|business|B|चालान
+stakeholder|a person or group affected by a decision or project|Every stakeholder should approve the plan before launch.|meeting|A|
+benchmark|a standard used to compare performance|We use last year's sales as a benchmark.|business|A|
+elaborate|to explain something in more detail|Could you elaborate on your second point?|meeting|I|विस्तार से बताना
+plausible|reasonable and likely to be true|That sounds like a plausible explanation for the delay.|academic|I|
+humble|not proud; modest about your achievements|Despite his success, he stays humble.|personality|B|विनम्र
+ambitious|having a strong wish to succeed|She is ambitious and wants to lead a team soon.|personality|B|महत्वाकांक्षी
+ubiquitous|seeming to be everywhere at once|Smartphones are ubiquitous in modern life.|academic|A|
+meticulous|very careful about small details|He is meticulous about checking every number.|work|A|
+overwhelmed|feeling that there is too much to handle|I feel overwhelmed when my inbox has hundreds of emails.|emotion|B|`;
+const PHR=`carry out|to perform or complete a task|We will carry out a customer survey next week.|work|I||separable, transitive
+figure out|to understand or solve something|I can't figure out why the app keeps crashing.|daily|B|समझ लेना|separable, transitive
+bring up|to mention a topic (also: to raise a child)|Don't bring up salary in the first meeting.|meeting|I||separable, transitive; two meanings: mention / raise a child
+look into|to investigate|The manager will look into your complaint.|work|I|जांच करना|inseparable, transitive
+put off|to delay until later|Don't put off your revision until the last day.|daily|B|टालना|separable, transitive
+come across|to find or meet by chance|I often come across new words while reading.|daily|I||inseparable, transitive
+deal with|to handle a situation or person|She knows how to deal with difficult customers.|work|B||inseparable, transitive
+follow up|to take further action after earlier contact|I will follow up with you after the call.|business|I||separable, transitive
+work out|to solve; to exercise; to end well|Let's work out a plan that suits everyone.|daily|B||separable; several meanings
+back up|to support, or to save a copy|Please back up your files before updating.|work|B||separable, transitive
+set up|to arrange or establish|We need to set up a meeting with the client.|work|B||separable, transitive
+call off|to cancel|They had to call off the event because of rain.|daily|B||separable, transitive
+take on|to accept responsibility or work|I can take on another project this month.|work|I||separable, transitive
+run out of|to use all of something|We are about to run out of time.|daily|B||inseparable, transitive
+go over|to review carefully|Let's go over the agenda before the meeting.|meeting|B||inseparable, transitive
+point out|to draw attention to something|Can I point out a small mistake in the slide?|meeting|B||separable, transitive
+turn down|to refuse an offer|He decided to turn down the job offer.|interview|B||separable, transitive
+step down|to leave a position|The CEO will step down next year.|business|I||intransitive`;
+const IDM=`break the ice|to help people relax at the start of a conversation|A quick joke helped break the ice.|social|B|बातचीत शुरू करना|formality: informal
+once in a blue moon|very rarely|I eat fast food once in a blue moon.|daily|B|कभी-कभार|formality: informal
+on the same page|in agreement or sharing the same understanding|Let's confirm we are on the same page before we start.|meeting|B||formality: neutral
+a blessing in disguise|something that seems bad but turns out good|Losing that job was a blessing in disguise.|daily|I||formality: neutral
+hit the nail on the head|to describe exactly what is true|You hit the nail on the head with that comment.|meeting|I||formality: informal
+the ball is in your court|it is your turn to act or decide|I've sent my offer, so the ball is in your court.|business|I||formality: neutral
+under the weather|slightly ill|I'm feeling under the weather today.|daily|B|तबीयत ठीक नहीं|formality: informal
+call it a day|to stop working for the day|It's late, so let's call it a day.|work|B||formality: informal
+get the ball rolling|to start a process|Let's get the ball rolling with a quick brainstorm.|meeting|I||formality: neutral
+cut corners|to do something cheaply or carelessly|We should never cut corners on safety.|business|I||formality: neutral
+a piece of cake|something very easy|The test was a piece of cake.|daily|B|बहुत आसान|formality: informal
+back to the drawing board|time to start again after a failed plan|The client rejected it, so it's back to the drawing board.|business|I||formality: neutral
+touch base|to contact someone briefly|Let's touch base on Monday.|business|I||formality: informal to neutral
+bite the bullet|to do something unpleasant you cannot avoid|I decided to bite the bullet and ask for feedback.|daily|I||formality: informal
+read between the lines|to understand a hidden meaning|If you read between the lines, he is unhappy.|social|I||formality: neutral
+the last straw|the final problem that makes you lose patience|Being late again was the last straw.|work|I||formality: neutral`;
+const COL=`make a decision|to choose after thinking|We need to make a decision by Friday.|work|B
+take responsibility|to accept that something is your duty or fault|Leaders must take responsibility for their mistakes.|work|I
+meet a deadline|to finish by the required time|She worked late to meet a deadline.|work|B
+raise a concern|to mention a worry politely|I'd like to raise a concern about the schedule.|meeting|I
+reach an agreement|to decide together after discussion|We hope to reach an agreement today.|business|I
+pay attention|to listen or watch carefully|Please pay attention to the instructions.|daily|B
+strong argument|a convincing reason or case|She presented a strong argument for remote work.|academic|I
+give feedback|to share opinions on someone's work|Could you give feedback on my draft?|work|B
+do research|to study a subject to find facts|I need to do research before the meeting.|academic|B
+set a goal|to decide what you want to achieve|Set a goal for each week.|daily|B
+take a break|to rest briefly|Let's take a break for ten minutes.|daily|B
+heavy traffic|a lot of vehicles on the road|I was late because of heavy traffic.|daily|B`;
+const PAT=`In my opinion, ...|gives your view politely|In my opinion, we should launch next month.|opinion|I
+I see your point, but ...|disagrees politely|I see your point, but the budget is limited.|disagree|I
+That's a good point.|agrees politely|That's a good point; I hadn't considered the cost.|agree|B
+Could you elaborate on ...?|asks for more detail|Could you elaborate on the second step?|question|I
+What if we ...?|suggests an idea softly|What if we moved the meeting to Tuesday?|suggest|B
+I'd suggest that we ...|makes a formal suggestion|I'd suggest that we review the data first.|suggest|I
+To put it simply, ...|explains an idea simply|To put it simply, we need more time.|explain|I
+Let me clarify ...|makes your meaning clear|Let me clarify what I meant by flexible.|explain|I
+I was wondering if you could ...|makes a very polite request|I was wondering if you could send me the report.|professional|I
+As far as I'm concerned, ...|states a personal view|As far as I'm concerned, quality comes first.|opinion|I
+Would you mind ...?|asks politely for a favour|Would you mind closing the window?|professional|B`;
+const T={word:'Word',phr:'Phrasal verb',idm:'Idiom',col:'Collocation',pat:'Sentence pattern'};
+const LV={B:'Beginner',I:'Intermediate',A:'Advanced'};
+const parse=(t,s)=>s.trim().split('\n').map((r,i)=>{const a=r.split('|');return{id:t+i,t,w:a[0],m:a[1],e:a[2],c:a[3]||'general',l:a[4]||'I',h:a[5]||'',p:a[6]||''}});
+const SEED=[].concat(parse('word',WORDS),parse('phr',PHR),parse('idm',IDM),parse('col',COL),parse('pat',PAT));
+
+/* ===== HELPERS ===== */
+const $=s=>document.querySelector(s);
+const h=(t,a,...k)=>{const e=document.createElement(t);for(const n in a||{}){const v=a[n];if(n.slice(0,2)=='on')e.addEventListener(n.slice(2),v);else if(n=='class')e.className=v;else if(n=='value')e.value=v;else if(v!==false&&v!=null)e.setAttribute(n,v)}k.flat(9).forEach(c=>{if(c!==false&&c!=null)e.append(c instanceof Node?c:String(c))});return e};
+const ymd=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addD=(s,n)=>{const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return ymd(d)};
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2600)}
+const sel=(o,fn,v)=>h('select',{onchange:e=>fn(e.target.value)},o.map(([k,l])=>h('option',{value:k,selected:k==v},l)));
+
+/* ===== STORAGE ===== */
+const KEY='lexiflow_v1';let S;
+function load(){let d=null;try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+ S=Object.assign({p:{},custom:[],log:{},quiz:[],cat:{},set:{}},d||{});S.set=Object.assign({goal:10,hindi:true,theme:'light',qn:10},S.set)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save: browser storage is unavailable.')}}
+const all=()=>SEED.concat(S.custom);
+const P1=x=>S.p[x.id]||{};
+const gp=id=>S.p[id]||(S.p[id]={n:0,wr:0,iv:0,ez:2.5,h:[]});
+const due=x=>{const p=P1(x);return !!p.due&&p.due<=ymd()};
+const L=()=>S.log[ymd()]||{l:0,r:0,q:0};
+function act(k){const d=ymd(),o=S.log[d]=S.log[d]||{l:0,r:0,q:0};o[k]++}
+function streaks(){const ks=Object.keys(S.log).filter(k=>{const o=S.log[k];return o.l+o.r+o.q>0}).sort();let best=0,run=0,prev=null;
+ ks.forEach(k=>{run=prev&&addD(prev,1)==k?run+1:1;best=Math.max(best,run);prev=k});
+ let cur=0,d=ks.includes(ymd())?ymd():addD(ymd(),-1);while(ks.includes(d)){cur++;d=addD(d,-1)}return[cur,best]}
+
+/* ===== SPACED REPETITION (simplified SM-2) =====
+ Again: due today again, ease -0.2 | Hard: interval x1.2, ease -0.15
+ Good: 1 day first, then interval x ease | Easy: 3 days first, then interval x ease x1.3, ease +0.15
+ Saved per item: interval (iv), ease (ez), due, history (h), mistakes (wr).
+ "Learned" = marked by you, or graded Good/Easy once. "Mastered" = interval >= 21 days.
+ This schedules reviews; it does not guarantee permanent memory. Opening a card is never counted. */
+function grade(id,g){const p=gp(id),t=ymd();
+ if(g==0){p.iv=0;p.ez=Math.max(1.3,p.ez-.2);p.wr++;p.due=t}
+ else{if(g==1){p.iv=Math.max(1,p.iv*1.2);p.ez=Math.max(1.3,p.ez-.15)}
+  else if(g==2)p.iv=p.iv<1?1:p.iv*p.ez;else{p.iv=p.iv<1?3:p.iv*p.ez*1.3;p.ez+=.15}
+  p.iv=Math.max(1,Math.round(p.iv));p.due=addD(t,p.iv)}
+ p.n++;p.h.push([t,g]);p.h=p.h.slice(-20);act('r');
+ if(g>=2&&!p.lr){p.lr=1;p.at=t;act('l')}}
+
+/* ===== WORD DETAIL DIALOG ===== */
+function openW(x){const d=$('#dlg');
+ const draw=()=>{const q=P1(x),ta=h('textarea',{rows:2,style:'width:100%',placeholder:'Write your own sentence with "'+x.w+'"',value:q.my||''});
+  d.replaceChildren(h('h2',{},x.w),
+   h('p',{},h('span',{class:'tag'},T[x.t]),h('span',{class:'tag'},LV[x.l]||x.l),h('span',{class:'tag'},x.c)),
+   h('p',{},x.m),S.set.hindi&&x.h?h('p',{class:'mut'},'Hindi: '+x.h):null,
+   x.e?h('p',{},'“'+x.e+'”'):null,x.p?h('p',{class:'mut'},x.p):null,
+   h('b',{},'Use it today'),ta,
+   h('div',{class:'row'},
+    h('button',{class:'btn',onclick:()=>{const v=ta.value.trim();if(!v)return toast('Write a sentence first.');gp(x.id).my=v;save();toast(v.toLowerCase().includes(x.w.toLowerCase())?'Sentence saved.':'Saved, but it does not contain the exact term.')}},'Save sentence'),
+    h('button',{class:'btn',onclick:()=>{gp(x.id).bm=!q.bm;save();draw()}},q.bm?'★ Bookmarked':'☆ Bookmark'),
+    h('button',{class:'btn',onclick:()=>{const p=gp(x.id);if(p.lr)p.lr=0;else{p.lr=1;p.at=ymd();p.iv=p.iv||1;p.due=p.due||addD(ymd(),1);act('l')}save();draw()}},q.lr?'✓ Learned (undo)':'Mark learned'),
+    h('button',{class:'btn p',onclick:()=>d.close()},'Close')))};
+ draw();d.showModal()}
+$('#dlg').addEventListener('close',()=>{if(V=='home')render()});
+
+/* ===== VIEWS ===== */
+let V='home',Q=null,R=null,ED=null;
+const NAV=[['home','Dashboard'],['lib','Library'],['rev','Review'],['quiz','Quiz'],['cloud','Word clouds'],['mine','My words'],['set','Settings']];
+function render(){document.documentElement.dataset.theme=S.set.theme;
+ $('#nav').replaceChildren(...NAV.map(([k,l])=>h('button',{class:k==V?'on':'','aria-current':k==V?'page':null,onclick:()=>{V=k;Q=null;R=null;ED=null;render()}},l)));
+ $('#main').replaceChildren(VIEWS[V]());window.scrollTo(0,0)}
+
+function home(){const it=all(),t=ymd(),lg=L(),[cs,bs]=streaks(),g=S.set.goal;
+ const qn=S.quiz.reduce((a,q)=>a+q.n,0),qo=S.quiz.reduce((a,q)=>a+q.s,0);
+ const ws=it.filter(x=>x.t=='word'),wod=ws[[...t].reduce((a,c)=>a+c.charCodeAt(0),0)%ws.length];
+ const st=(l,v)=>h('div',{class:'box'},h('div',{class:'num'},v),h('div',{class:'mut'},l));
+ const days=[...Array(7)].map((_,i)=>addD(t,i-6)),vals=days.map(d=>{const o=S.log[d];return o?o.l+o.r+o.q:0}),mx=Math.max(1,...vals);
+ const lst=(ti,a)=>h('div',{class:'box'},h('b',{},ti),a.length?h('div',{class:'row'},a.map(x=>h('button',{class:'btn',onclick:()=>openW(x)},x.w))):h('p',{class:'mut'},'Nothing here yet.'));
+ const rec=it.filter(x=>P1(x).lr).sort((a,b)=>(P1(b).at||'')>(P1(a).at||'')?1:-1).slice(0,8);
+ const cats=Object.keys(T).filter(k=>S.cat[k]&&S.cat[k].n).map(k=>T[k]+': '+Math.round(S.cat[k].ok/S.cat[k].n*100)+'%').join(' · ');
+ return h('div',{},
+  h('div',{class:'box'},h('h2',{},new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})),
+   h('p',{class:'mut'},'Today: '+lg.l+' of '+g+' new words learned'),h('div',{class:'bar'},h('i',{style:'width:'+Math.min(100,lg.l/g*100)+'%'})),
+   h('div',{class:'row'},h('button',{class:'btn p',onclick:()=>{V='rev';R=null;render()}},'Start today’s practice')),
+   h('p',{class:'mut'},'Routine: 1) learn new words in Review, 2) browse phrases in Library, 3) take a short Quiz, 4) revise what is due.')),
+  h('div',{class:'grid'},st('Words learned today',lg.l),st('Total learned',it.filter(x=>P1(x).lr).length),st('Phrasal verbs practised',it.filter(x=>x.t=='phr'&&P1(x).n>0).length),
+   st('Idioms learned',it.filter(x=>x.t=='idm'&&P1(x).lr).length),st('Due for revision',it.filter(due).length),st('Mastered (21+ day interval)',it.filter(x=>P1(x).iv>=21).length),
+   st('Streak (current / longest)',cs+' / '+bs),st('Quiz accuracy',qn?Math.round(qo/qn*100)+'%':'No quizzes yet')),
+  h('div',{class:'box'},h('b',{},'Activity, last 7 days (reviews + learned + quiz answers)'),h('div',{class:'wk'},vals.map((v,i)=>h('div',{title:days[i]+': '+v,style:'height:'+(v/mx*100)+'%'}))),
+   cats?h('p',{class:'mut'},'Accuracy by type — '+cats):null),
+  h('div',{class:'box'},h('b',{},'Word of the Day'),h('p',{},h('button',{class:'btn',onclick:()=>openW(wod)},wod.w),' '+wod.m)),
+  lst('Recently learned',rec),lst('Bookmarked',it.filter(x=>P1(x).bm).slice(0,12)),
+  h('p',{class:'mut'},'Learned = you marked it or answered Good/Easy in Review. Mastered = review interval of 21+ days. Opening a card never counts.'))}
+
+const stat=(x,s)=>{const p=P1(x);return !s||(s=='new'&&!p.lr)||(s=='lrn'&&p.lr)||(s=='bm'&&p.bm)||(s=='due'&&due(x))||(s=='hard'&&p.wr>0)};
+const card=x=>h('button',{class:'card',onclick:()=>openW(x)},h('b',{},(P1(x).bm?'★ ':'')+x.w),h('div',{},h('span',{class:'tag'},T[x.t]),h('span',{class:'tag'},x.c)),h('div',{class:'mut'},x.m));
+function lib(){const f={q:'',t:'',l:'',s:''},list=h('div',{class:'grid'}),cnt=h('span',{class:'mut'});
+ const draw=()=>{const r=all().filter(x=>(!f.t||x.t==f.t)&&(!f.l||x.l==f.l)&&stat(x,f.s)&&(!f.q||(x.w+' '+x.m).toLowerCase().includes(f.q)));
+  cnt.textContent=r.length+' items';list.replaceChildren(...(r.length?r.map(card):[h('p',{class:'mut'},'No items match. Clear a filter or search term.')]))};
+ const ch=k=>v=>{f[k]=v;draw()};
+ const w=h('div',{},h('div',{class:'row'},h('input',{type:'search','aria-label':'Search',placeholder:'Search…',oninput:e=>{f.q=e.target.value.toLowerCase();draw()}}),
+  sel([['','All types'],...Object.entries(T)],ch('t')),sel([['','All levels'],['B','Beginner'],['I','Intermediate'],['A','Advanced']],ch('l')),
+  sel([['','Any status'],['new','Not learned'],['lrn','Learned'],['bm','Bookmarked'],['due','Due'],['hard','Difficult']],ch('s')),
+  h('button',{class:'btn',onclick:()=>openW(sh(all())[0])},'🎲 Random item'),cnt),list);draw();return w}
+
+function rev(){if(!R){const it=all(),d=it.filter(due).sort((a,b)=>(P1(b).wr||0)-(P1(a).wr||0)),left=Math.max(0,S.set.goal-L().l);
+  R={q:d.concat(sh(it.filter(x=>!P1(x).lr&&!P1(x).due)).slice(0,left)),i:0,show:false,done:0}}
+ const bx=h('div',{class:'box'});
+ if(R.i>=R.q.length){bx.append(h('h2',{},R.done?'Session complete':'Nothing due right now'),h('p',{class:'mut'},R.done?'You reviewed '+R.done+' cards.':'Today’s goal is met and nothing is due. You can still practise any time.'),
+  h('button',{class:'btn p',onclick:()=>{R={q:sh(all()).slice(0,10),i:0,show:false,done:0};render()}},'Practise 10 random items'));return bx}
+ const x=R.q[R.i];
+ bx.append(h('p',{class:'mut'},'Card '+(R.i+1)+' of '+R.q.length+(due(x)?' · due':' · new')),h('h2',{},x.w),h('span',{class:'tag'},T[x.t]));
+ if(!R.show)bx.append(h('div',{class:'row'},h('button',{class:'btn p',onclick:()=>{R.show=true;render()}},'Show answer')));
+ else bx.append(h('p',{},x.m),S.set.hindi&&x.h?h('p',{class:'mut'},'Hindi: '+x.h):null,h('p',{},'“'+x.e+'”'),x.p?h('p',{class:'mut'},x.p):null,
+  h('div',{class:'row'},['Again','Hard','Good','Easy'].map((l,g)=>h('button',{class:'btn',onclick:()=>{grade(x.id,g);if(g==0)R.q.push(x);R.i++;R.done++;R.show=false;save();render()}},l))));
+ return bx}
+
+function mkQ(it){const pool=all().filter(x=>x.t==it.t&&x.id!=it.id),op=sh(pool.length>=3?pool:all().filter(x=>x.id!=it.id)).slice(0,3),i=it.e?it.e.toLowerCase().indexOf(it.w.toLowerCase()):-1;
+ if(i>=0&&Math.random()<.5)return{it,q:'Complete the sentence: '+it.e.slice(0,i)+'_____'+it.e.slice(i+it.w.length),o:sh([it,...op]).map(x=>x.w),a:it.w};
+ return{it,q:'What does "'+it.w+'" mean?',o:sh([it,...op]).map(x=>x.m),a:it.m}}
+function quiz(){
+ if(!Q)return h('div',{class:'box'},h('h2',{},'Daily quiz'),h('p',{class:'mut'},'Mixes words, phrasal verbs, idioms, collocations and sentence patterns. No question repeats in a session.'),
+  h('div',{class:'row'},[5,10,20].map(n=>h('button',{class:'btn p',onclick:()=>{Q={qs:sh(all()).slice(0,n).map(mkQ),i:0,sc:0,wrong:[],ans:null};render()}},n+' questions'))));
+ if(Q.i>=Q.qs.length){const by={};Q.wrong.forEach(x=>by[x.t]=(by[x.t]||0)+1);
+  return h('div',{class:'box'},h('h2',{},'Score: '+Q.sc+' / '+Q.qs.length+' ('+Math.round(Q.sc/Q.qs.length*100)+'%)'),
+   h('p',{},Q.wrong.length?'Weak categories: '+Object.keys(by).map(k=>T[k]+' ('+by[k]+' missed)').join(', '):'All correct — great work.'),
+   Q.wrong.length?h('div',{},h('b',{},'Revise these (they are now due in Review):'),h('div',{class:'row'},Q.wrong.map(x=>h('button',{class:'btn',onclick:()=>openW(x)},x.w)))):null,
+   h('button',{class:'btn p',onclick:()=>{Q=null;render()}},'New quiz'))}
+ const q=Q.qs[Q.i],ok=Q.ans==q.a;
+ return h('div',{class:'box'},h('p',{class:'mut'},'Question '+(Q.i+1)+' of '+Q.qs.length),h('h2',{},q.q),
+  q.o.map(o=>h('button',{class:'btn opt'+(Q.ans!=null?(o==q.a?' good':o==Q.ans?' bad':''):''),disabled:Q.ans!=null?'':null,onclick:()=>{
+   Q.ans=o;const c=o==q.a,p=gp(q.it.id);p.n++;const k=S.cat[q.it.t]=S.cat[q.it.t]||{n:0,ok:0};k.n++;act('q');
+   if(c){Q.sc++;k.ok++}else{p.wr++;p.due=ymd();Q.wrong.push(q.it)}save();render()}},o)),
+  Q.ans!=null?h('div',{'aria-live':'polite'},h('p',{},(ok?'Correct. ':'Not quite. ')+q.it.w+' — '+q.it.m),q.it.e?h('p',{class:'mut'},'Example: '+q.it.e):null,
+   h('button',{class:'btn p',onclick:()=>{Q.i++;Q.ans=null;if(Q.i>=Q.qs.length){S.quiz.push({d:ymd(),n:Q.qs.length,s:Q.sc});save()}render()}},Q.i+1>=Q.qs.length?'See results':'Next')):null)}
+
+function cloud(){let k='all',s='';
+ const F={all:()=>true,biz:x=>x.c=='business',daily:x=>x.c=='daily',bm:x=>P1(x).bm,hard:x=>P1(x).wr>0,due:due};
+ const defs=[['all','All vocabulary'],['biz','Business & finance'],['daily','Daily conversation'],['bm','Bookmarked'],['rec','Recently learned'],['hard','Difficult'],['due','Due for revision']];
+ const out=h('div',{class:'cloud'});
+ const draw=()=>{let r=all();r=k=='rec'?r.filter(x=>P1(x).lr).sort((a,b)=>(P1(b).at||'')>(P1(a).at||'')?1:-1).slice(0,25):r.filter(F[k]);
+  r=r.filter(x=>!s||x.w.toLowerCase().includes(s));
+  out.replaceChildren(...(r.length?r.map(x=>h('button',{style:'font-size:'+(14+Math.min(1+(P1(x).wr||0)*2+(due(x)?1:0),8)*3)+'px',onclick:()=>openW(x)},x.w)):[h('p',{class:'mut'},'No words here yet. Bookmark, learn or practise words to fill this cloud.')]))};
+ const w=h('div',{class:'box'},h('h2',{},'Word clouds'),
+  h('div',{class:'row'},sel(defs,v=>{k=v;draw()},k),h('input',{type:'search','aria-label':'Search words',placeholder:'Search list…',oninput:e=>{s=e.target.value.toLowerCase();draw()}})),out,
+  h('p',{class:'mut'},'Bigger word = more wrong answers or due for review. Words you have not practised stay small; nothing is estimated. Every word is a button, so the cloud works as a searchable list too.'));
+ draw();return w}
+
+function mine(){const cur=ED&&S.custom.find(c=>c.id==ED),f=Object.assign({t:'word',w:'',m:'',e:'',c:'custom',l:'I',h:''},cur||{});
+ const inp=(k,l)=>h('label',{},l,h('input',{value:f[k],style:'width:100%;margin-bottom:8px',oninput:e=>f[k]=e.target.value}));
+ return h('div',{},h('div',{class:'box'},h('h2',{},cur?'Edit entry':'Add your own entry'),
+  h('label',{},'Type',sel(Object.entries(T),v=>f.t=v,f.t)),' ',h('label',{},'Level',sel(Object.entries(LV),v=>f.l=v,f.l)),
+  inp('w','Word or phrase'),inp('m','Meaning'),inp('e','Example sentence'),inp('c','Category'),inp('h','Hindi meaning (optional)'),
+  h('div',{class:'row'},h('button',{class:'btn p',onclick:()=>{const w=f.w.trim(),m=f.m.trim();if(!w||!m)return toast('Word and meaning are required.');
+   const o={t:f.t,w,m,e:f.e.trim(),c:f.c.trim()||'custom',l:f.l,h:f.h.trim(),p:''};
+   if(cur)Object.assign(cur,o);else S.custom.push(Object.assign({id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)},o));
+   ED=null;save();toast('Saved.');render()}},cur?'Save changes':'Add entry'),cur?h('button',{class:'btn',onclick:()=>{ED=null;render()}},'Cancel'):null)),
+  h('div',{class:'box'},h('b',{},'Your entries ('+S.custom.length+')'),S.custom.length?S.custom.map(c=>h('div',{class:'row'},h('button',{class:'btn',onclick:()=>openW(c)},c.w),h('span',{class:'tag'},T[c.t]),
+   h('button',{class:'btn',onclick:()=>{ED=c.id;render()}},'Edit'),h('button',{class:'btn',onclick:()=>{if(confirm('Delete "'+c.w+'"?')){S.custom=S.custom.filter(x=>x.id!=c.id);delete S.p[c.id];save();render()}}},'Delete'))):h('p',{class:'mut'},'No custom entries yet. Add a word you met today.')))}
+
+function exp(){const b=new Blob([JSON.stringify({app:'lexiflow',v:1,p:S.p,custom:S.custom,log:S.log,quiz:S.quiz,cat:S.cat},null,1)],{type:'application/json'}),a=h('a',{href:URL.createObjectURL(b),download:'lexiflow-backup-'+ymd()+'.json'});document.body.append(a);a.click();a.remove()}
+function imp(file){const r=new FileReader();r.onerror=()=>toast('Could not read the file.');r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||d.app!='lexiflow'||!Array.isArray(d.custom))throw 0;
+ const ex=new Set(all().map(x=>x.t+'|'+x.w.toLowerCase())),ids=new Set(all().map(x=>x.id));let a=0,s=0;
+ d.custom.forEach(c=>{const key=c&&T[c.t]&&typeof c.w=='string'?c.t+'|'+c.w.toLowerCase():null;
+  if(c&&key&&typeof c.m=='string'&&c.w&&c.w.length<200&&!ex.has(key)){let id=/^c[a-z0-9]+$/.test(c.id)&&!ids.has(c.id)?c.id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+   ids.add(id);ex.add(key);S.custom.push({id,t:c.t,w:c.w,m:c.m,e:String(c.e||''),c:String(c.c||'custom'),l:LV[c.l]?c.l:'I',h:String(c.h||''),p:''});a++}else s++});
+ if(d.p&&typeof d.p=='object')for(const k in d.p)if(ids.has(k)&&!S.p[k]&&d.p[k]&&typeof d.p[k]=='object')S.p[k]=d.p[k];
+ if(d.log&&typeof d.log=='object')for(const k in d.log)if(!S.log[k]&&d.log[k]&&typeof d.log[k]=='object')S.log[k]={l:+d.log[k].l||0,r:+d.log[k].r||0,q:+d.log[k].q||0};
+ save();toast('Imported '+a+' new entries; skipped '+s+' duplicates or invalid. Existing data was not overwritten.');render()}catch(e){toast('Import failed: not a valid LexiFlow backup.')}};r.readAsText(file)}
+
+function settings(){const up=(k,v)=>{S.set[k]=v;save();render()};
+ return h('div',{class:'box'},h('h2',{},'Settings'),
+  h('div',{class:'row'},h('label',{},'Daily new-word goal (5–20) ',h('input',{type:'number',min:5,max:20,value:S.set.goal,style:'width:80px',onchange:e=>up('goal',Math.min(20,Math.max(5,parseInt(e.target.value)||10)))}))),
+  h('div',{class:'row'},h('label',{},'Theme ',sel([['light','Light'],['dark','Dark']],v=>up('theme',v),S.set.theme))),
+  h('div',{class:'row'},h('label',{},'Default quiz length ',sel([['5','5'],['10','10'],['20','20']],v=>up('qn',+v),String(S.set.qn)))),
+  h('div',{class:'row'},h('label',{},h('input',{type:'checkbox',checked:S.set.hindi?'':null,onchange:e=>up('hindi',e.target.checked)}),' Show Hindi meanings')),
+  h('div',{class:'row'},h('button',{class:'btn',onclick:exp},'Export backup (JSON)'),h('label',{class:'btn'},'Import backup ',h('input',{type:'file',accept:'.json,application/json',onchange:e=>{if(e.target.files[0])imp(e.target.files[0]);e.target.value=''}}))),
+  h('div',{class:'row'},h('button',{class:'btn',style:'border-color:var(--no)',onclick:()=>{if(confirm('Reset ALL progress, bookmarks, streaks and quiz history? Your custom entries and settings are kept. This cannot be undone.')){S.p={};S.log={};S.quiz=[];S.cat={};save();toast('Progress reset.');render()}}},'Reset progress')))}
+
+const VIEWS={home,lib,rev,quiz,cloud,mine,set:settings};
+load();render();
+</script>
+</body>
+</html>
