@@ -323,7 +323,7 @@ $('#dlg').addEventListener('close',()=>{if(V=='home')render()});
 
 /* ===== VIEWS ===== */
 let V='home',Q=null,R=null,ED=null;
-const NAV=[['home','Dashboard'],['lib','Library'],['rev','Review'],['quiz','Quiz'],['cloud','Word clouds'],['mine','My words'],['set','Settings']];
+const NAV=[['home','Dashboard'],['lib','Library'],['phr','Phrases'],['rev','Review'],['quiz','Quiz'],['cloud','Word clouds'],['mine','My words'],['set','Settings']];
 function render(){document.documentElement.dataset.theme=S.set.theme;
  $('#nav').replaceChildren(...NAV.map(([k,l])=>h('button',{class:k==V?'on':'','aria-current':k==V?'page':null,onclick:()=>{V=k;Q=null;R=null;ED=null;render()}},l)));
  $('#main').replaceChildren(VIEWS[V]());window.scrollTo(0,0)}
@@ -340,7 +340,7 @@ function home(){const it=all(),t=ymd(),lg=L(),[cs,bs]=streaks(),g=S.set.goal;
   h('div',{class:'box'},h('h2',{},new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})),
    h('p',{class:'mut'},'Today: '+lg.l+' of '+g+' new words learned'),h('div',{class:'bar'},h('i',{style:'width:'+Math.min(100,lg.l/g*100)+'%'})),
    h('div',{class:'row'},h('button',{class:'btn p',onclick:()=>{V='rev';R=null;render()}},'Start today’s practice')),
-   h('p',{class:'mut'},'Routine: 1) learn new words in Review, 2) browse phrases in Library, 3) take a short Quiz, 4) revise what is due.')),
+   h('p',{class:'mut'},'Routine: 1) learn new words in Review, 2) practise phrases in the Phrases tab, 3) take a short Quiz, 4) revise what is due.')),
   h('div',{class:'box'},h('div',{class:'row'},h('h2',{style:'margin:0'},'Today’s 3 new words'),h('button',{class:'btn',onclick:()=>{if(pickDaily(Math.random,S.daily?S.daily.ids:[]))render();else toast('No unlearned words left to show. Add your own in My words.')}},'↻ Show 3 new words')),h('div',{class:'grid'},todays().map(x=>h('div',{class:'card'},h('b',{},x.w),
    h('p',{},x.m),x.e?h('p',{class:'mut'},'“'+x.e+'”'):null,S.set.hindi&&x.h?h('p',{class:'mut'},'Hindi: '+x.h):null,
    h('div',{class:'row'},P1(x).lr?h('span',{class:'tag'},'✓ Learned'):h('button',{class:'btn p',onclick:()=>{markL(x);render()}},'Mark learned'),h('button',{class:'btn',onclick:()=>openW(x)},'Details')))))),
@@ -354,15 +354,15 @@ function home(){const it=all(),t=ymd(),lg=L(),[cs,bs]=streaks(),g=S.set.goal;
   h('p',{class:'mut'},'Learned = you marked it or answered Good/Easy in Review. Mastered = review interval of 21+ days. Opening a card never counts.'))}
 
 const stat=(x,s)=>{const p=P1(x);return !s||(s=='new'&&!p.lr)||(s=='lrn'&&p.lr)||(s=='bm'&&p.bm)||(s=='due'&&due(x))||(s=='hard'&&p.wr>0)};
-const card=x=>h('button',{class:'card',onclick:()=>openW(x)},h('b',{},(P1(x).bm?'★ ':'')+x.w),h('div',{},h('span',{class:'tag'},T[x.t]),h('span',{class:'tag'},x.c)),h('div',{class:'mut'},x.m));
-function lib(){const f={q:'',t:'',l:'',s:'',c:''},list=h('div',{class:'grid'}),cnt=h('span',{class:'mut'});
- const draw=()=>{const r=all().filter(x=>(!f.t||x.t==f.t)&&(!f.l||x.l==f.l)&&(!f.c||x.c==f.c)&&stat(x,f.s)&&(!f.q||(x.w+' '+x.m).toLowerCase().includes(f.q)));
+const card=x=>h('button',{class:'card',onclick:()=>openW(x)},h('b',{},(P1(x).bm?'★ ':'')+x.w),h('div',{},h('span',{class:'tag'},T[x.t]),h('span',{class:'tag'},x.c)),h('div',{class:'mut'},x.m),x.t=='exp'?h('div',{style:'margin-top:4px'},'“'+x.e+'”'):null);
+function lib(ft){const base=()=>all().filter(x=>ft?x.t==ft:x.t!='exp'),f={q:'',t:'',l:'',s:'',c:''},list=h('div',{class:'grid'}),cnt=h('span',{class:'mut'});
+ const draw=()=>{const r=base().filter(x=>(!f.t||x.t==f.t)&&(!f.l||x.l==f.l)&&(!f.c||x.c==f.c)&&stat(x,f.s)&&(!f.q||(x.w+' '+x.m).toLowerCase().includes(f.q)));
   cnt.textContent=r.length+' items';list.replaceChildren(...(r.length?r.map(card):[h('p',{class:'mut'},'No items match. Clear a filter or search term.')]))};
  const ch=k=>v=>{f[k]=v;draw()};
- const w=h('div',{},h('div',{class:'row'},h('input',{type:'search','aria-label':'Search',placeholder:'Search…',oninput:e=>{f.q=e.target.value.toLowerCase();draw()}}),
-  sel([['','All types'],...Object.entries(T)],ch('t')),sel([['','All levels'],['B','Beginner'],['I','Intermediate'],['A','Advanced']],ch('l')),sel([['','All categories'],...[...new Set(all().map(x=>x.c))].sort().map(c=>[c,c])],ch('c')),
+ const w=h('div',{},ft?h('h2',{},'Useful phrases'):null,ft?h('p',{class:'mut'},'Everyday phrases by situation. Pick a category, tap a phrase for details, and bookmark the ones you want to revise.'):null,h('div',{class:'row'},h('input',{type:'search','aria-label':'Search',placeholder:'Search…',oninput:e=>{f.q=e.target.value.toLowerCase();draw()}}),
+  ft?null:sel([['','All types'],...Object.entries(T).filter(([k])=>k!='exp')],ch('t')),sel([['','All levels'],['B','Beginner'],['I','Intermediate'],['A','Advanced']],ch('l')),sel([['','All categories'],...[...new Set(base().map(x=>x.c))].sort().map(c=>[c,c])],ch('c')),
   sel([['','Any status'],['new','Not learned'],['lrn','Learned'],['bm','Bookmarked'],['due','Due'],['hard','Difficult']],ch('s')),
-  h('button',{class:'btn',onclick:()=>openW(sh(all())[0])},'🎲 Random item'),cnt),list);draw();return w}
+  h('button',{class:'btn',onclick:()=>openW(sh(base())[0])},'🎲 Random item'),cnt),list);draw();return w}
 
 function rev(){if(!R){const it=all(),d=it.filter(due).sort((a,b)=>(P1(b).wr||0)-(P1(a).wr||0)),left=Math.max(0,S.set.goal-L().l);
   R={q:d.concat(sh(it.filter(x=>!P1(x).lr&&!P1(x).due)).slice(0,left)),i:0,show:false,done:0}}
@@ -466,7 +466,7 @@ function settings(){const up=(k,v)=>{S.set[k]=v;save();render()};
   h('div',{class:'row'},h('button',{class:'btn',onclick:exp},'Export backup (JSON)'),h('label',{class:'btn'},'Import backup ',h('input',{type:'file',accept:'.json,application/json',onchange:e=>{if(e.target.files[0])imp(e.target.files[0]);e.target.value=''}}))),
   h('div',{class:'row'},h('button',{class:'btn',style:'border-color:var(--no)',onclick:()=>{if(confirm('Reset ALL progress, bookmarks, streaks and quiz history? Your custom entries and settings are kept. This cannot be undone.')){S.p={};S.log={};S.quiz=[];S.cat={};save();toast('Progress reset.');render()}}},'Reset progress')))}
 
-const VIEWS={home,lib,rev,quiz,cloud,mine,set:settings};
+const VIEWS={home,lib:()=>lib(),phr:()=>lib('exp'),rev,quiz,cloud,mine,set:settings};
 load();render();
 </script>
 </body>
