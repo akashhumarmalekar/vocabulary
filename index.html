@@ -187,7 +187,45 @@ running late|arriving later than planned|I'm running late, so please start witho
 it slipped my mind|I forgot about it|Sorry, it slipped my mind to send the report.|daily|I
 give it a try|attempt something to see what happens|Why not give it a try before you decide?|daily|B
 worth a shot|worth trying even if it might fail|It may not work, but it's worth a shot.|daily|I
-it's a deal|you accept an offer or agreement|Ten percent off and delivery by Friday? It's a deal.|negotiation|I`;
+it's a deal|you accept an offer or agreement|Ten percent off and delivery by Friday? It's a deal.|negotiation|I
+run it by me|ask someone to look at something before you do it|Please run it by me before you send it to the client.|work & office|B
+loop me in|include me in the conversation or emails|Loop me in when you reply to the supplier.|work & office|B
+behind schedule|later than planned|The project is two weeks behind schedule.|work & office|B
+wrap up|to finish something|Let's wrap up the meeting in five minutes.|work & office|B
+out of the office|not at work|I'll be out of the office until Monday.|work & office|B
+I'm starving|very hungry|I'm starving; let's order now.|food & dining|B
+grab a bite|eat something quickly|Let's grab a bite before the movie.|food & dining|B
+it's on me|I will pay|Put your wallet away; it's on me.|food & dining|B
+split the bill|share the cost of a meal|Shall we split the bill equally?|food & dining|B
+hit the spot|satisfy you perfectly|That hot soup really hit the spot.|food & dining|I
+take-out|food bought to eat somewhere else|Let's get take-out and eat at home.|food & dining|B||British English: takeaway
+bon appétit|enjoy your meal|The waiter smiled and said, "Bon appétit!"|food & dining|B
+I'm stuffed|too full to eat any more|No dessert for me, thanks. I'm stuffed.|food & dining|B
+a table for two|a request for seats for two people|Good evening, a table for two, please.|food & dining|B
+how have you been|asks about someone's recent life|Long time no see! How have you been?|greetings & social|B
+what's up|an informal greeting meaning how are you or what's new|Hey, what's up? Are you free tonight?|greetings & social|B
+catch up|to talk and share recent news|We should catch up over coffee this weekend.|greetings & social|B
+my pleasure|a polite reply to thanks|Thanks for your help. My pleasure.|greetings & social|B
+take care|a friendly way to say goodbye|It was great to see you. Take care!|greetings & social|B
+see you around|a casual goodbye|I have to run now. See you around!|greetings & social|B
+congratulations on|use this to praise someone's success|Congratulations on your promotion!|greetings & social|B
+make yourself at home|tell a guest to relax and feel comfortable|Come in and make yourself at home.|greetings & social|B
+check in|to register on arrival at a hotel or airport|We need to check in at the hotel by 3 p.m.|travel|B
+boarding pass|a ticket that lets you get on a plane|Please show your boarding pass at the gate.|travel|B
+connecting flight|a flight you take after landing to reach your final stop|I missed my connecting flight in Dubai.|travel|I
+carry-on|a small bag you take into the plane cabin|My carry-on fits under the seat.|travel|B
+delayed|later than planned|Our flight is delayed by two hours.|travel|B
+one-way ticket|a ticket for travel in one direction only|I'd like a one-way ticket to Pune.|travel|B
+round trip|a journey to a place and back|The round trip takes about four hours.|travel|B
+get off|to leave a bus, train or plane|Please get off at the next stop.|travel|B
+how much is this|asks the price of something|Excuse me, how much is this jacket?|shopping|B
+can I try this on|asks to test clothes before buying|Can I try this on in a medium?|shopping|B
+do you have this in|asks for another size or colour|Do you have this in blue?|shopping|B
+it's too expensive|the price is higher than you want to pay|Sorry, it's too expensive for my budget.|shopping|B
+on sale|being sold at a lower price|These shoes are on sale until Sunday.|shopping|B
+I'll take it|you decide to buy something|This one fits well. I'll take it.|shopping|B
+keep the change|let the seller keep the extra money|Here is 500 rupees; keep the change.|shopping|B
+cash or card|asks how you will pay|Will that be cash or card?|shopping|B`;
 const T={word:'Word',phr:'Phrasal verb',idm:'Idiom',col:'Collocation',pat:'Sentence pattern',exp:'Useful phrase'};
 const LV={B:'Beginner',I:'Intermediate',A:'Advanced'};
 const parse=(t,s)=>s.trim().split('\n').map((r,i)=>{const a=r.split('|');return{id:t+i,t,w:a[0],m:a[1],e:a[2],c:a[3]||'general',l:a[4]||'I',h:a[5]||'',p:a[6]||''}});
