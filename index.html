@@ -72,7 +72,35 @@ humble|not proud; modest about your achievements|Despite his success, he stays h
 ambitious|having a strong wish to succeed|She is ambitious and wants to lead a team soon.|personality|B|महत्वाकांक्षी
 ubiquitous|seeming to be everywhere at once|Smartphones are ubiquitous in modern life.|academic|A|
 meticulous|very careful about small details|He is meticulous about checking every number.|work|A|
-overwhelmed|feeling that there is too much to handle|I feel overwhelmed when my inbox has hundreds of emails.|emotion|B|`;
+overwhelmed|feeling that there is too much to handle|I feel overwhelmed when my inbox has hundreds of emails.|emotion|B|
+cognizant|aware of something and why it matters|Managers must be cognizant of how their words affect the team.|thinking & learning|A|जागरूक|Similar: aware, mindful
+scrutinize|to examine something very closely and carefully|Auditors scrutinize every invoice before approving the accounts.|thinking & learning|A|बारीकी से जाँचना|Similar: examine, inspect
+discern|to notice or recognise something that is not obvious|It was hard to discern the real reason behind his silence.|thinking & learning|A|पहचानना|Similar: notice, perceive
+comprehend|to understand something fully|I could not comprehend the contract until my lawyer explained it.|thinking & learning|I|समझना|Similar: understand, grasp
+postulate|to suggest an idea as the starting point of a theory|Scientists postulate that sleep helps the brain store memories.|thinking & learning|A|मान लेना|Similar: suggest, propose
+contemplate|to think deeply about something for some time|She began to contemplate a move to another city.|thinking & learning|I|चिंतन करना|Similar: consider, ponder
+elucidate|to explain something so that it becomes clear|Could you elucidate the reasons behind this policy change?|thinking & learning|A|स्पष्ट करना|Similar: explain, clarify
+deduce|to reach a conclusion from facts or clues|From the empty office, I deduce that everyone has gone to lunch.|thinking & learning|I|निष्कर्ष निकालना|Similar: infer, conclude
+assimilate|to absorb and fully understand new information|New employees must assimilate a lot of information in the first week.|thinking & learning|A|आत्मसात करना|Similar: absorb, learn
+hypothesize|to suggest an explanation that still needs to be tested|Researchers hypothesize that the drop in sales is seasonal.|thinking & learning|A|परिकल्पना करना|Similar: guess, theorize
+articulate|to express ideas clearly in words|He can articulate complex ideas in simple language.|speaking & communication|A|स्पष्ट रूप से व्यक्त करना|Similar: express, state. Also an adjective: able to speak clearly
+emphasize|to give special importance to something|The speaker wanted to emphasize the importance of punctuality.|speaking & communication|I|ज़ोर देना|Similar: highlight, stress
+convey|to communicate an idea or feeling to someone|A good presentation should convey one clear message.|speaking & communication|I|व्यक्त करना|Similar: communicate, express
+assert|to state something firmly and confidently|She learned to assert her opinion in meetings.|speaking & communication|I|दृढ़ता से कहना|Similar: declare, state
+corroborate|to give evidence that supports a statement|Two witnesses corroborate his version of events.|speaking & communication|A|पुष्टि करना|Similar: confirm, support
+reiterate|to repeat something to make it clear|Let me reiterate the deadline: all reports are due on Friday.|speaking & communication|A|दोहराना|Similar: repeat, restate
+advocate|to publicly support an idea or plan|Many doctors advocate regular walking for good health.|speaking & communication|A|समर्थन करना|Similar: support, recommend. Also a noun: a person who supports a cause
+interject|to interrupt a conversation with a short remark|Sorry to interject, but the meeting room is booked at noon.|speaking & communication|A|बीच में बोलना|Similar: interrupt, comment
+persuade|to convince someone to do or believe something|I tried to persuade my manager to approve the training.|speaking & communication|I|मनाना|Similar: convince, influence
+exasperated|very annoyed because something keeps happening|He felt exasperated after waiting an hour on hold.|feelings & attitude|I|खीझा हुआ|Similar: annoyed, irritated
+apprehensive|worried that something bad may happen|I was apprehensive before my first interview.|feelings & attitude|I|आशंकित|Similar: anxious, uneasy
+jubilant|extremely happy, especially after a success|The team was jubilant after winning the final.|feelings & attitude|A|उल्लासित|Similar: happy, overjoyed
+indignant|angry because something seems unfair|She was indignant when they blamed her for the error.|feelings & attitude|A|आक्रोशित|Similar: angry, offended
+pensive|quietly thinking, often a little sad|He looked pensive as he stared out of the window.|feelings & attitude|A|चिंतनशील|Similar: thoughtful, reflective
+disgruntled|unhappy and dissatisfied|Disgruntled customers often leave negative reviews.|feelings & attitude|I|असंतुष्ट|Similar: unhappy, annoyed
+wary|careful because you think something may be dangerous|Be wary of emails that ask for your password.|feelings & attitude|I|सतर्क|Similar: cautious, careful
+elated|extremely happy and excited|I was elated when I got the job offer.|feelings & attitude|I|प्रफुल्लित|Similar: thrilled, excited
+ambivalent|having mixed feelings about something|She felt ambivalent about leaving her old team.|feelings & attitude|A|द्विधाग्रस्त|Similar: unsure, conflicted`;
 const PHR=`carry out|to perform or complete a task|We will carry out a customer survey next week.|work|I||separable, transitive
 figure out|to understand or solve something|I can't figure out why the app keeps crashing.|daily|B|समझ लेना|separable, transitive
 bring up|to mention a topic (also: to raise a child)|Don't bring up salary in the first meeting.|meeting|I||separable, transitive; two meanings: mention / raise a child
@@ -259,12 +287,12 @@ function home(){const it=all(),t=ymd(),lg=L(),[cs,bs]=streaks(),g=S.set.goal;
 
 const stat=(x,s)=>{const p=P1(x);return !s||(s=='new'&&!p.lr)||(s=='lrn'&&p.lr)||(s=='bm'&&p.bm)||(s=='due'&&due(x))||(s=='hard'&&p.wr>0)};
 const card=x=>h('button',{class:'card',onclick:()=>openW(x)},h('b',{},(P1(x).bm?'★ ':'')+x.w),h('div',{},h('span',{class:'tag'},T[x.t]),h('span',{class:'tag'},x.c)),h('div',{class:'mut'},x.m));
-function lib(){const f={q:'',t:'',l:'',s:''},list=h('div',{class:'grid'}),cnt=h('span',{class:'mut'});
- const draw=()=>{const r=all().filter(x=>(!f.t||x.t==f.t)&&(!f.l||x.l==f.l)&&stat(x,f.s)&&(!f.q||(x.w+' '+x.m).toLowerCase().includes(f.q)));
+function lib(){const f={q:'',t:'',l:'',s:'',c:''},list=h('div',{class:'grid'}),cnt=h('span',{class:'mut'});
+ const draw=()=>{const r=all().filter(x=>(!f.t||x.t==f.t)&&(!f.l||x.l==f.l)&&(!f.c||x.c==f.c)&&stat(x,f.s)&&(!f.q||(x.w+' '+x.m).toLowerCase().includes(f.q)));
   cnt.textContent=r.length+' items';list.replaceChildren(...(r.length?r.map(card):[h('p',{class:'mut'},'No items match. Clear a filter or search term.')]))};
  const ch=k=>v=>{f[k]=v;draw()};
  const w=h('div',{},h('div',{class:'row'},h('input',{type:'search','aria-label':'Search',placeholder:'Search…',oninput:e=>{f.q=e.target.value.toLowerCase();draw()}}),
-  sel([['','All types'],...Object.entries(T)],ch('t')),sel([['','All levels'],['B','Beginner'],['I','Intermediate'],['A','Advanced']],ch('l')),
+  sel([['','All types'],...Object.entries(T)],ch('t')),sel([['','All levels'],['B','Beginner'],['I','Intermediate'],['A','Advanced']],ch('l')),sel([['','All categories'],...[...new Set(all().map(x=>x.c))].sort().map(c=>[c,c])],ch('c')),
   sel([['','Any status'],['new','Not learned'],['lrn','Learned'],['bm','Bookmarked'],['due','Due'],['hard','Difficult']],ch('s')),
   h('button',{class:'btn',onclick:()=>openW(sh(all())[0])},'🎲 Random item'),cnt),list);draw();return w}
 
