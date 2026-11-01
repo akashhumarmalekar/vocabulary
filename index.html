@@ -158,74 +158,65 @@ Let me clarify ...|makes your meaning clear|Let me clarify what I meant by flexi
 I was wondering if you could ...|makes a very polite request|I was wondering if you could send me the report.|professional|I
 As far as I'm concerned, ...|states a personal view|As far as I'm concerned, quality comes first.|opinion|I
 Would you mind ...?|asks politely for a favour|Would you mind closing the window?|professional|B`;
-const EXP=`let's get started|use this to begin a meeting or task|Good morning, everyone. Let's get started.|meeting|B
-thanks for joining|thank people for attending a call or meeting|Thanks for joining the call on such short notice.|meeting|B
-to be honest|use this to say something frankly|To be honest, I think the deadline is too tight.|opinion|B
-I'll get back to you|promise to reply later|I'll get back to you with the figures by tomorrow.|email|B
-just to clarify|check that you have understood correctly|Just to clarify, the report is due on Monday, not Friday.|meeting|B
-at the end of the day|when everything is considered|At the end of the day, the customer makes the final choice.|opinion|I
-as per our discussion|according to what we talked about (formal email)|As per our discussion, I have attached the revised plan.|email|I
-please find attached|a formal way to say a file is attached|Please find attached the invoice for March.|email|I
-looking forward to hearing from you|a polite way to end an email|I am looking forward to hearing from you soon.|email|B
-sorry for the inconvenience|an apology for causing trouble|Sorry for the inconvenience; we are fixing the issue now.|email|B
-I'm afraid|a polite way to give bad news|I'm afraid we cannot offer a discount this month.|negotiation|I
-with all due respect|a polite opening before you disagree|With all due respect, I see the problem differently.|disagree|A
-that makes sense|shows you understand and accept an idea|That makes sense; let's try your approach.|agree|B
-I couldn't agree more|you strongly agree|I couldn't agree more; we need a better plan.|agree|I
-let's agree to disagree|accept different opinions and stop arguing|We still differ, so let's agree to disagree.|disagree|I
-it's up to you|you are free to decide|I'm happy with either option; it's up to you.|daily|B
-no worries|it is fine, do not worry (informal)|No worries, I can send the file again.|daily|B
-keep me posted|ask someone to update you|Please keep me posted on the client's decision.|work|I
-heads up|an early warning or notice (informal)|Just a heads up: the meeting has moved to 3 p.m.|work|I
-in the loop|informed about what is happening|Please keep me in the loop about any changes.|work|I
-bear with me|ask for a little patience|Please bear with me while I find the file.|meeting|I
-touch on|to mention a topic briefly|I'd like to touch on three points today.|presentation|I
-to sum up|introduces a short summary|To sum up, we need more time and more budget.|presentation|I
-let me walk you through|explain something step by step|Let me walk you through the new process.|presentation|I
-any questions so far|check that the audience understands|Before I continue, any questions so far?|presentation|B
-running late|arriving later than planned|I'm running late, so please start without me.|daily|B
-it slipped my mind|I forgot about it|Sorry, it slipped my mind to send the report.|daily|I
-give it a try|attempt something to see what happens|Why not give it a try before you decide?|daily|B
-worth a shot|worth trying even if it might fail|It may not work, but it's worth a shot.|daily|I
-it's a deal|you accept an offer or agreement|Ten percent off and delivery by Friday? It's a deal.|negotiation|I
-run it by me|ask someone to look at something before you do it|Please run it by me before you send it to the client.|work & office|B
-loop me in|include me in the conversation or emails|Loop me in when you reply to the supplier.|work & office|B
-behind schedule|later than planned|The project is two weeks behind schedule.|work & office|B
-wrap up|to finish something|Let's wrap up the meeting in five minutes.|work & office|B
-out of the office|not at work|I'll be out of the office until Monday.|work & office|B
-I'm starving|very hungry|I'm starving; let's order now.|food & dining|B
-grab a bite|eat something quickly|Let's grab a bite before the movie.|food & dining|B
-it's on me|I will pay|Put your wallet away; it's on me.|food & dining|B
-split the bill|share the cost of a meal|Shall we split the bill equally?|food & dining|B
-hit the spot|satisfy you perfectly|That hot soup really hit the spot.|food & dining|I
-take-out|food bought to eat somewhere else|Let's get take-out and eat at home.|food & dining|B||British English: takeaway
-bon appétit|enjoy your meal|The waiter smiled and said, "Bon appétit!"|food & dining|B
-I'm stuffed|too full to eat any more|No dessert for me, thanks. I'm stuffed.|food & dining|B
-a table for two|a request for seats for two people|Good evening, a table for two, please.|food & dining|B
-how have you been|asks about someone's recent life|Long time no see! How have you been?|greetings & social|B
-what's up|an informal greeting meaning how are you or what's new|Hey, what's up? Are you free tonight?|greetings & social|B
-catch up|to talk and share recent news|We should catch up over coffee this weekend.|greetings & social|B
-my pleasure|a polite reply to thanks|Thanks for your help. My pleasure.|greetings & social|B
-take care|a friendly way to say goodbye|It was great to see you. Take care!|greetings & social|B
-see you around|a casual goodbye|I have to run now. See you around!|greetings & social|B
-congratulations on|use this to praise someone's success|Congratulations on your promotion!|greetings & social|B
-make yourself at home|tell a guest to relax and feel comfortable|Come in and make yourself at home.|greetings & social|B
-check in|to register on arrival at a hotel or airport|We need to check in at the hotel by 3 p.m.|travel|B
-boarding pass|a ticket that lets you get on a plane|Please show your boarding pass at the gate.|travel|B
-connecting flight|a flight you take after landing to reach your final stop|I missed my connecting flight in Dubai.|travel|I
-carry-on|a small bag you take into the plane cabin|My carry-on fits under the seat.|travel|B
-delayed|later than planned|Our flight is delayed by two hours.|travel|B
-one-way ticket|a ticket for travel in one direction only|I'd like a one-way ticket to Pune.|travel|B
-round trip|a journey to a place and back|The round trip takes about four hours.|travel|B
-get off|to leave a bus, train or plane|Please get off at the next stop.|travel|B
-how much is this|asks the price of something|Excuse me, how much is this jacket?|shopping|B
-can I try this on|asks to test clothes before buying|Can I try this on in a medium?|shopping|B
-do you have this in|asks for another size or colour|Do you have this in blue?|shopping|B
-it's too expensive|the price is higher than you want to pay|Sorry, it's too expensive for my budget.|shopping|B
-on sale|being sold at a lower price|These shoes are on sale until Sunday.|shopping|B
-I'll take it|you decide to buy something|This one fits well. I'll take it.|shopping|B
-keep the change|let the seller keep the extra money|Here is 500 rupees; keep the change.|shopping|B
-cash or card|asks how you will pay|Will that be cash or card?|shopping|B`;
+const EXP=`circle back|to return to a topic later|Let's circle back to the pricing question after the break.|meetings & discussion|I
+take this offline|to discuss something privately, outside the meeting|This is getting detailed, so let's take this offline.|meetings & discussion|I
+table the discussion|to postpone a topic until later|Let's table the discussion until we have the final numbers.|meetings & discussion|A
+play devil's advocate|to argue against an idea in order to test it|Let me play devil's advocate: what if the launch fails?|meetings & discussion|A
+cut to the chase|to get quickly to the main point|I'll cut to the chase: we need another month.|meetings & discussion|I
+for the sake of argument|assuming something is true so you can explore an idea|For the sake of argument, suppose the budget doubles.|meetings & discussion|A
+on balance|after considering all sides|On balance, the second option is the safer choice.|meetings & discussion|A
+that said|used to add a contrasting point|The plan is solid. That said, the timeline is ambitious.|meetings & discussion|I
+to that end|for that purpose|We want to cut costs; to that end, we'll renegotiate contracts.|meetings & discussion|A
+I am writing to enquire about|a formal opening to ask for information|I am writing to enquire about the availability of your training courses.|email & formal writing|A
+further to our conversation|referring to an earlier talk (formal)|Further to our conversation yesterday, I have attached the proposal.|email & formal writing|A
+I would appreciate it if you could|a very polite request|I would appreciate it if you could confirm by Thursday.|email & formal writing|A
+at your earliest convenience|as soon as it suits you (formal)|Please send the signed form at your earliest convenience.|email & formal writing|A
+I regret to inform you|a formal way to give bad news|I regret to inform you that your application was unsuccessful.|email & formal writing|A
+please do not hesitate to|a polite way to invite contact|Please do not hesitate to contact me if you have questions.|email & formal writing|I
+in light of|because of new information|In light of the new data, we have revised the forecast.|email & formal writing|A
+with reference to|about (formal)|With reference to your email of 5 May, the order has shipped.|email & formal writing|A
+pending your approval|while waiting for your approval|The order is on hold pending your approval.|email & formal writing|A
+meet you halfway|to compromise with someone|I can meet you halfway on the price.|negotiation & persuasion|I
+a win-win solution|an outcome that is good for both sides|Let's find a win-win solution that suits both teams.|negotiation & persuasion|I
+non-negotiable|cannot be changed through discussion|Safety standards are non-negotiable.|negotiation & persuasion|I
+a deal-breaker|a condition that ends the deal if it is not met|Late delivery is a deal-breaker for us.|negotiation & persuasion|I
+on the table|available for discussion|The offer is still on the table until Friday.|negotiation & persuasion|I
+sweeten the deal|to make an offer more attractive|To sweeten the deal, they offered free installation.|negotiation & persuasion|A
+strike a balance|to find a fair middle position|We must strike a balance between speed and quality.|negotiation & persuasion|A
+in good faith|honestly and with fair intentions|We negotiated in good faith for months.|negotiation & persuasion|A
+play hardball|to be very tough when negotiating|They began to play hardball over the delivery date.|negotiation & persuasion|A
+I tend to think|a softer way to give your view|I tend to think remote work suits focused tasks best.|opinions & debate|I
+it's a matter of|the issue depends on|It's a matter of priorities, not budget.|opinions & debate|I
+there's a lot to be said for|there are many good points about|There's a lot to be said for starting early.|opinions & debate|A
+I beg to differ|a polite but firm way to disagree|I beg to differ; the data shows the opposite.|opinions & debate|A
+by the same token|in the same way, for the same reason|By the same token, small teams can move faster.|opinions & debate|A
+to some extent|partly|To some extent, the delay was unavoidable.|opinions & debate|I
+take it with a pinch of salt|do not believe it completely|Take it with a pinch of salt; the source is unreliable.|opinions & debate|I
+the flip side|the opposite or negative aspect|The flip side is that costs will rise.|opinions & debate|I
+I couldn't help but notice|a polite way to mention what you noticed|I couldn't help but notice how well your presentation was received.|networking & social|A
+it's a small world|said when you meet a surprising connection|You studied there too? It's a small world.|networking & social|I
+let's keep in touch|let's stay in contact|It was great meeting you; let's keep in touch.|networking & social|I
+I've heard great things about|a polite compliment about someone's work|I've heard great things about your team.|networking & social|I
+what brings you to|asks why someone is in a place|What brings you to Mumbai this week?|networking & social|I
+I'd love to pick your brain|ask an expert for ideas and advice|I'd love to pick your brain about starting a business.|networking & social|A
+don't be a stranger|keep in contact more often|Don't be a stranger; drop by any time.|networking & social|I
+I owe you one|I am in your debt for a favour|You fixed my slides in ten minutes; I owe you one.|networking & social|I
+dietary requirements|foods you cannot or do not eat|Do you have any dietary requirements?|dining & hospitality|I
+on the house|free, paid for by the restaurant|The dessert is on the house tonight.|dining & hospitality|I
+à la carte|ordered as separate dishes, not as a set meal|We ordered à la carte instead of the fixed menu.|dining & hospitality|A
+the chef's special|a dish the chef recommends today|Today the chef's special is lamb curry.|dining & hospitality|I
+compliments to the chef|praise for the person who cooked|Please pass my compliments to the chef.|dining & hospitality|A
+service charge|an extra fee added for service|A service charge is added to the bill.|dining & hospitality|I
+reserve a table|to book a table in advance|I'd like to reserve a table for eight at seven.|dining & hospitality|I
+I'll pass|a polite way to say no thank you|I'll pass on dessert, thanks.|dining & hospitality|I
+layover|a short stop between two flights|I have a four-hour layover in Doha.|travel & logistics|I
+jet lag|tiredness after a long flight across time zones|I'm still recovering from jet lag.|travel & logistics|I
+off the beaten track|away from the usual tourist places|We found a quiet village off the beaten track.|travel & logistics|A
+travel light|to take very little luggage|I always travel light for business trips.|travel & logistics|I
+excess baggage|luggage over the weight limit|They charged me for excess baggage.|travel & logistics|I
+get a refund|to receive your money back|You can get a refund if you cancel 48 hours before.|travel & logistics|I
+fully booked|having no places left|The hotel is fully booked this weekend.|travel & logistics|I
+itinerary|the planned route and schedule of a trip|Our itinerary includes two days in Jaipur.|travel & logistics|I`;
 const T={word:'Word',phr:'Phrasal verb',idm:'Idiom',col:'Collocation',pat:'Sentence pattern',exp:'Useful phrase'};
 const LV={B:'Beginner',I:'Intermediate',A:'Advanced'};
 const parse=(t,s)=>s.trim().split('\n').map((r,i)=>{const a=r.split('|');return{id:t+i,t,w:a[0],m:a[1],e:a[2],c:a[3]||'general',l:a[4]||'I',h:a[5]||'',p:a[6]||''}});
@@ -265,7 +256,7 @@ const sel=(o,fn,v)=>h('select',{onchange:e=>fn(e.target.value)},o.map(([k,l])=>h
 /* ===== STORAGE ===== */
 const KEY='lexiflow_v1';let S;
 function load(){let d=null;try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}
- S=Object.assign({p:{},custom:[],log:{},quiz:[],cat:{},set:{},daily:null,seen:[]},d||{});S.set=Object.assign({goal:10,hindi:true,theme:'light',qn:10},S.set)}
+ S=Object.assign({p:{},custom:[],log:{},quiz:[],cat:{},set:{},daily:null,seen:[]},d||{});S.set=Object.assign({goal:10,hindi:true,theme:'light',qn:10},S.set);if(!S.mig1){for(const k in S.p)if(k.startsWith('exp'))delete S.p[k];S.mig1=1}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save: browser storage is unavailable.')}}
 const all=()=>SEED.concat(S.custom);
 const P1=x=>S.p[x.id]||{};
